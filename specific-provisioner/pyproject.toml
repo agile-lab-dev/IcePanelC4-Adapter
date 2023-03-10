@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "specific-provisioner"
+version = "0.1.0"
+description = ""
+authors = ["claudio.piva <claudio.piva@agilelab.it>"]
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pytest = "^7.2.2"
+flake8 = "^6.0.0"
+black = "^23.1.0"
+isort = "^5.12.0"
+mypy = "^1.1.1"
+fastapi-code-generator = "^0.4.1"
+fastapi = {extras = ["all"], version = "^0.93.0"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
