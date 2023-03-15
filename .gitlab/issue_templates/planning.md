@@ -20,7 +20,7 @@ Please fill the following sections to record meeting outcome
 
 ## Critical points
 
-Please fill this section with anything that comes up during planning that is critical to the success of this milestone 
+Please fill this section with anything that comes up during planning that is critical to the success of this milestone
 
 ## Notes
 

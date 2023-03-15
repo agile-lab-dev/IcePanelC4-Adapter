@@ -22,7 +22,7 @@ Please fill the following sections to record meeting outcome
 
 ## Critical points
 
-Please fill this section with anything that comes up during review that is critical to the success of the project 
+Please fill this section with anything that comes up during review that is critical to the success of the project
 
 ## Notes
 
