@@ -5,9 +5,108 @@
 # Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+
 stages:
-- test
+  - test
+  - build
+
 sast:
   stage: test
+  artifacts:
+    paths:
+       - gl-sast-report.json
+    reports:
+      sast: gl-sast-report.json
 include:
-- template: Security/SAST.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
+
+fail_on_detection:
+  needs:
+  - semgrep-sast
+  before_script:
+  - apt update -y && apt -y install jq
+  script:
+    - ls -a
+    - jq '.vulnerabilities[] | .severity' gl-sast-report.json | grep 'High\|Critical' && exit 1 || true;
+
+linter:
+  stage: test
+  image: python:3.11
+  before_script:
+  - python --version
+  - pip install poetry
+  - cd specific-provisioner
+  - poetry lock --no-update
+  - poetry install
+  script:
+    - poetry run ruff .
+    - poetry run black .
+
+type_checks:
+  stage: test
+  image: python:3.11
+  before_script:
+  - python --version
+  - pip install poetry
+  - cd specific-provisioner
+  - poetry lock --no-update
+  - poetry install
+  script:
+    - poetry run mypy .
+
+unit_test:
+  stage: test
+  image: python:3.11
+  before_script:
+  - python --version
+  - pip install poetry
+  - cd specific-provisioner
+  - poetry lock --no-update
+  - poetry install
+  script:
+  - poetry run pytest tests/
+
+poetry_build:
+  stage: build
+  image: python:3.11
+  before_script:
+  - python --version
+  - pip install poetry
+  - cd specific-provisioner
+  - poetry lock --no-update
+  - poetry install
+  script:
+  - poetry build
+  artifacts:
+    paths:
+      - specific-provisioner/dist
+
+docker_build:
+  stage: build
+  image: docker:23.0.0
+  services:
+    - docker:23.0.0-dind
+  variables:
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
+  script:
+  - cd specific-provisioner
+  - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+  - docker build -t $IMAGE_TAG .
+  - echo $IMAGE_TAG
+  - docker push $IMAGE_TAG
+
+push_build:
+  stage: build
+  image: alpine
+  before_script:
+    - apk update && apk add curl
+  script:
+    - set +x
+    - ls -al
+    - cp specific-provisioner/dist/*.whl build-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}.whl
+    - export NAME_WHEEL=$(basename *.whl)
+    - ls -al
+    - echo ${NAME_WHEEL}
+    - echo ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/builds/0.1.0/${NAME_WHEEL}
+    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${NAME_WHEEL} "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/builds/0.1.0/${NAME_WHEEL}"'
+  needs: ['poetry_build']
