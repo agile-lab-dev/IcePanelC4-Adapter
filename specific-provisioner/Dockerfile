@@ -3,6 +3,8 @@ FROM python:3.11
 WORKDIR /app
 
 COPY pyproject.toml .
+COPY poetry.lock .
+COPY server_start.sh .
 
 WORKDIR /app/src
 COPY src/. .
@@ -15,6 +17,6 @@ RUN pip install poetry
 RUN poetry config virtualenvs.create false
 RUN poetry install --no-root
 
-EXPOSE 8000
+EXPOSE 5002
 
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+ENTRYPOINT ["bash", "server_start.sh"]
