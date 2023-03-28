@@ -12,14 +12,15 @@ pytest = "^7.2.2"
 black = "^23.1.0"
 mypy = "^1.1.1"
 fastapi-code-generator = "^0.4.1"
-fastapi = {extras = ["all"], version = "^0.90.1"}
+fastapi = {extras = ["all"], version = "^0.94.0"}
 pre-commit = "^3.1.1"
 ruff = "^0.0.255"
-opentelemetry-distro = "^0.37b0"
-opentelemetry-instrumentation-fastapi = "0.37b0"
-opentelemetry-exporter-otlp-proto-grpc = "^1.16.0"
-opentelemetry-exporter-otlp = "^1.16.0"
+opentelemetry-distro = "^0.38b0"
+opentelemetry-instrumentation-fastapi = "0.38b0"
+opentelemetry-exporter-otlp-proto-grpc = "^1.17.0"
+opentelemetry-exporter-otlp = "^1.17.0"
 httpx = "0.23.0"
+pip-audit = "^2.5.3"
 
 [tool.ruff]
 select = ["E", "F", "I"]
