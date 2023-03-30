@@ -88,7 +88,7 @@ type_checks:
   script:
     - poetry run mypy .
 
-unit_test:
+run_tests:
   stage: test
   image: python:3.11
   before_script:
@@ -98,7 +98,13 @@ unit_test:
     - poetry lock --no-update
     - poetry install
   script:
-    - poetry run pytest tests/
+    - poetry run pytest --cov=src/ tests/. --cov-report=xml
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: specific-provisioner/coverage.xml
 
 poetry_build:
   stage: build

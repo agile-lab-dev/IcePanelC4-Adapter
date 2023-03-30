@@ -19,8 +19,8 @@ opentelemetry-distro = "^0.38b0"
 opentelemetry-instrumentation-fastapi = "0.38b0"
 opentelemetry-exporter-otlp-proto-grpc = "^1.17.0"
 opentelemetry-exporter-otlp = "^1.17.0"
-httpx = "0.23.0"
 pip-audit = "^2.5.3"
+pytest-cov = "^4.0.0"
 
 [tool.ruff]
 select = ["E", "F", "I"]
@@ -30,6 +30,9 @@ skip-string-normalization = true
 
 [tool.pytest.ini_options]
 addopts = "-v"
+
+[tool.coverage.report]
+fail_under = 90
 
 [build-system]
 requires = ["poetry-core"]
