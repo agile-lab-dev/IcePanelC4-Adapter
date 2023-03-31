@@ -13,7 +13,6 @@
 stages:
   - test
   - build
-  - test_container
 
 include:
   - template: Security/SAST.gitlab-ci.yml
@@ -46,6 +45,7 @@ fail_on_detection:
     - ls -a
     - jq '.vulnerabilities[] | .severity' gl-sast-report.json | grep 'High\|Critical' && echo 'Vulnerabilities found in gl-sast-report.json' && exit 1 || true;
     - jq '.vulnerabilities[] | .severity' gl-secret-detection-report.json | grep 'High\|Critical' && echo 'Vulnerabilities found in gl-secret-detection-report.json' && exit 1 || true;
+    - echo 'No serious vulnerabilities found.'
 
 audit_scanning:
   image: python:3.11
@@ -153,8 +153,22 @@ push_build:
     - poetry_build
 
 container_scanning:
-  stage: test_container
+  stage: build
   variables:
     CS_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
     GIT_STRATEGY: fetch
     CS_DOCKERFILE_PATH: specific-provisioner/
+  needs:
+    - docker_build
+
+check_vulnerabilities_analysis:
+  stage : build
+  before_script:
+    - apt update -y && apt -y install jq
+  script:
+    - ls -a
+    - jq '.vulnerabilities[] | .severity' gl-container-scanning-report.json | grep 'High\|Critical' && echo 'Vulnerabilities found in gl-container-scanning-report.json' && exit 1|| true;
+    - jq '.vulnerabilities[] | .severity' gl-dependency-scanning-report.json | grep 'High\|Critical' && echo 'Vulnerabilities found in gl-dependency-scanning-report.json' && exit 1|| true;
+    - echo 'No serious vulnerabilities found.'
+  needs:
+    - container_scanning
