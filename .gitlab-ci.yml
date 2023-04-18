@@ -121,19 +121,38 @@ poetry_build:
     paths:
       - specific-provisioner/dist
 
+common_build:
+  stage: build
+  image: alpine
+  before_script:
+    - apk update && apk upgrade --no-cache
+    - apk add --no-cache bash git
+  script:
+    - chmod +x scripts/get-version.sh
+    - echo VERSION=`scripts/get-version.sh` > vars.env
+  after_script:
+    - ls -la
+  artifacts:
+    paths:
+      - ./
+    reports:
+      dotenv: vars.env
+
 docker_build:
   stage: build
   image: docker:23.0.0
   services:
     - docker:23.0.0-dind
-  variables:
-    IMAGE_TAG: "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA"
   script:
     - cd specific-provisioner
+    - export COMPOSE_DOCKER_CLI_BUILD=1
+    - export DOCKER_BUILDKIT=1
+    - echo VERSION=${VERSION}
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
-    - docker build -t $IMAGE_TAG .
-    - echo $IMAGE_TAG
-    - docker push $IMAGE_TAG
+    - docker build -t $CI_REGISTRY_IMAGE:$VERSION .
+    - docker push $CI_REGISTRY_IMAGE:$VERSION
+  needs:
+    - common_build
 
 push_build:
   stage: build
@@ -143,7 +162,8 @@ push_build:
   script:
     - set +x
     - ls -al
-    - cp specific-provisioner/dist/*.whl build-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}.whl
+    - echo VERSION=${VERSION}
+    - cp specific-provisioner/dist/*.whl build-${VERSION}.whl
     - export NAME_WHEEL=$(basename *.whl)
     - ls -al
     - echo ${NAME_WHEEL}
@@ -151,15 +171,23 @@ push_build:
     - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${NAME_WHEEL} "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/builds/0.1.0/${NAME_WHEEL}"'
   needs:
     - poetry_build
+    - common_build
 
 container_scanning:
   stage: build
   variables:
-    CS_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
     GIT_STRATEGY: fetch
     CS_DOCKERFILE_PATH: specific-provisioner/
+    CS_IMAGE: $CI_REGISTRY_IMAGE:$VERSION
+  script:
+    - 'echo Version: $VERSION'
+    - 'echo Image to be scanned: $CS_IMAGE'
+    - gtcs scan
   needs:
     - docker_build
+    - common_build
+  dependencies:
+    - common_build
 
 check_vulnerabilities_analysis:
   stage : build
