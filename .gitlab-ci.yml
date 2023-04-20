@@ -47,17 +47,20 @@ fail_on_detection:
     - jq '.vulnerabilities[] | .severity' gl-secret-detection-report.json | grep 'High\|Critical' && echo 'Vulnerabilities found in gl-secret-detection-report.json' && exit 1 || true;
     - echo 'No serious vulnerabilities found.'
 
-audit_scanning:
+compliance:
   image: python:3.11
   before_script:
     - python --version
-    - pip install poetry
+    - pip install poetry liccheck
     - cd specific-provisioner
     - poetry lock --no-update
     - poetry install
   script:
     - poetry export --without-hashes --format=requirements.txt > requirements.txt
     - poetry run pip-audit -r ./requirements.txt -f json > vulnerabilities.json
+    - source $(poetry env info --path)/bin/activate
+    - export PYTHONPATH="$PYTHONPATH:$VIRTUAL_ENV/lib/python3.11/site-packages"
+    - liccheck -r requirements.txt
   artifacts:
    when: always
    paths:

@@ -37,3 +37,23 @@ fail_under = 90
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.liccheck]
+authorized_licenses = [
+    'apache license 2.0',
+    'apache software',
+    'bsd',
+    'cc0 1.0 universal (cc0 1.0) public domain dedication',
+    'gnu lesser general public license v2 or later (lgplv2+)',
+    'isc',
+    'isc license (iscl)',
+    'mit',
+    'mozilla public license 2.0 (mpl 2.0)',
+    'other/proprietary',
+    'python software foundation',
+    'the unlicense (unlicense)',
+    '3-clause bsd'
+]
+unauthorized_licenses = [
+    "gnu general public license v2 (gplv2)"
+]
