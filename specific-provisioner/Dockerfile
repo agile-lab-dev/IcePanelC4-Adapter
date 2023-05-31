@@ -1,4 +1,4 @@
-FROM python:alpine
+FROM python:3.11-alpine
 
 RUN apk update
 RUN apk upgrade --available && sync
