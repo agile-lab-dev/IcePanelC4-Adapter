@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "pythonsp.name" . }}
+  labels:
+{{- include "pythonsp.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5002
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ template "pythonsp.name" . }}

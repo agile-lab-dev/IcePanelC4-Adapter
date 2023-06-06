@@ -1,0 +1,34 @@
+# Default values for python-specific-provisioner.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# -- Docker Registry Secret name used to access a private repo
+dockerRegistrySecretName: regcred
+
+image:
+  # -- Image repository
+  registry: registry.gitlab.com/agilefactory/witboost.mesh/provisioning/witboost.mesh.provisioning.pythonspecificprovisioner
+  # -- Image tag
+  tag: latest
+  # -- The imagePullPolicy for a container and the tag of the image affect when the kubelet attempts to pull (download) the specified image.
+  pullPolicy: Always
+
+# -- readiness probe spec
+readinessProbe: {}
+
+# -- liveness probe spec
+livenessProbe: {}
+
+# -- security context spec
+securityContext:
+  runAsUser: 1001
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+
+# -- resources spec
+resources: {}
+
+# -- Allows you to specify common labels
+labels: {}
+
+

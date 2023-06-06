@@ -18,6 +18,9 @@ include:
   - template: Security/SAST.gitlab-ci.yml
   - template: Security/Secret-Detection.gitlab-ci.yml
   - template: Jobs/Container-Scanning.gitlab-ci.yml
+  - project: 'AgileFactory/Witboost.Mesh/witboost.Mesh.CI'
+    ref: 'main'
+    file: 'common/witboost.helm.gitlab-ci.yml'
 
 sast:
   stage: test
@@ -79,6 +82,16 @@ linter:
     - poetry run ruff .
     - poetry run black .
 
+helm_test:
+  stage: test
+  extends: .witboost.helm.base-job
+  variables:
+    # helm chart's folder
+    CHART_FOLDER: helm
+  script:
+    - !reference [.witboost.helm.clone-scripts, script]
+    - !reference [.witboost.helm.checks, script]
+
 type_checks:
   stage: test
   image: python:3.11
@@ -126,15 +139,11 @@ poetry_build:
 
 common_build:
   stage: build
-  image: alpine
-  before_script:
-    - apk update && apk upgrade --no-cache
-    - apk add --no-cache bash git
+  extends: .witboost.helm.base-job
   script:
-    - chmod +x scripts/get-version.sh
-    - echo VERSION=`scripts/get-version.sh` > vars.env
-  after_script:
-    - ls -la
+    - !reference [.witboost.helm.clone-scripts, script]
+    - !reference [.witboost.helm.get-version, script]
+    - echo VERSION=${VERSION} > vars.env
   artifacts:
     paths:
       - ./
@@ -175,6 +184,12 @@ push_build:
   needs:
     - poetry_build
     - common_build
+
+helm_package:
+  stage: build
+  extends: .witboost.helm.deploy
+  needs:
+    - docker_build
 
 container_scanning:
   stage: build
