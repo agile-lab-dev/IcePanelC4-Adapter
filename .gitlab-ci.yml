@@ -49,6 +49,21 @@ fail_on_detection:
     - jq '.vulnerabilities[] | .severity' gl-sast-report.json | grep 'High\|Critical' && echo 'Vulnerabilities found in gl-sast-report.json' && exit 1 || true;
     - jq '.vulnerabilities[] | .severity' gl-secret-detection-report.json | grep 'High\|Critical' && echo 'Vulnerabilities found in gl-secret-detection-report.json' && exit 1 || true;
     - echo 'No serious vulnerabilities found.'
+  rules:
+    - if: $CI_COMMIT_BRANCH
+      exists:
+        - '**/*.py'
+        - '**/*.js'
+        - '**/*.jsx'
+        - '**/*.ts'
+        - '**/*.tsx'
+        - '**/*.c'
+        - '**/*.go'
+        - '**/*.java'
+        - '**/*.cs'
+        - '**/*.html'
+        - '**/*.scala'
+        - '**/*.sc'
 
 compliance:
   image: python:3.11
@@ -218,3 +233,5 @@ check_vulnerabilities_analysis:
     - echo 'No serious vulnerabilities found.'
   needs:
     - container_scanning
+  rules:
+    - if: $CI_COMMIT_BRANCH
