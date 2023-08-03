@@ -2,7 +2,7 @@
 name = "specific-provisioner"
 version = "0.1.0"
 description = ""
-authors = ["claudio.piva <claudio.piva@agilelab.it>"]
+authors = ["Agile Lab"]
 readme = "README.md"
 packages = [{include = "src"}]
 
