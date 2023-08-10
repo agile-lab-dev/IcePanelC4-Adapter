@@ -22,7 +22,15 @@ paths:
             schema:
               $ref: '#/components/schemas/ValidationRequest'
         required: true
+
+      response_model:
+        content:
+          application/json:
+            schema:
+              type: string
+
       responses:
+
         202:
           description: Returns the DAG id of the Provisioning Plan
           content:
