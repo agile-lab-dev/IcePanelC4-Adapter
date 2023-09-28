@@ -71,7 +71,6 @@ compliance:
     - python --version
     - pip install poetry liccheck
     - cd specific-provisioner
-    - poetry lock --no-update
     - poetry install
   script:
     - poetry export --without-hashes --format=requirements.txt > requirements.txt
@@ -91,7 +90,6 @@ linter:
     - python --version
     - pip install poetry
     - cd specific-provisioner
-    - poetry lock --no-update
     - poetry install
   script:
     - poetry run ruff .
@@ -114,7 +112,6 @@ type_checks:
     - python --version
     - pip install poetry
     - cd specific-provisioner
-    - poetry lock --no-update
     - poetry install
   script:
     - poetry run mypy .
@@ -126,7 +123,6 @@ run_tests:
     - python --version
     - pip install poetry
     - cd specific-provisioner
-    - poetry lock --no-update
     - poetry install
   script:
     - poetry run pytest --cov=src/ tests/. --cov-report=xml
@@ -144,7 +140,6 @@ poetry_build:
     - python --version
     - pip install poetry
     - cd specific-provisioner
-    - poetry lock --no-update
     - poetry install
   script:
     - poetry build
