@@ -1,7 +1,7 @@
 from starlette.testclient import TestClient
 
 from src.main import app
-from src.models import DescriptorKind, ProvisioningRequest
+from src.models.api_models import DescriptorKind, ProvisioningRequest
 
 client = TestClient(app)
 
@@ -13,7 +13,7 @@ def test_provisioning():
 
     resp = client.post("/v1/provision", json=dict(provisioning_request))
 
-    assert 'Response not yet implemented' in resp.json().get('error')
+    assert "Response not yet implemented" in resp.json().get("error")
 
 
 def test_unprovisioning():
@@ -23,4 +23,4 @@ def test_unprovisioning():
 
     resp = client.post("/v1/unprovision", json=dict(provisioning_request))
 
-    assert 'Response not yet implemented' in resp.json().get('error')
+    assert "Response not yet implemented" in resp.json().get("error")

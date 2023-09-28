@@ -7,7 +7,7 @@ from starlette.responses import Response
 from starlette.testclient import TestClient
 
 from src.check_return_type import check_response
-from src.models import SystemErr, ValidationError
+from src.models.api_models import SystemErr, ValidationError
 
 app2 = FastAPI()
 
@@ -20,9 +20,9 @@ class RequestModel(BaseModel):
     "/v1/test",
     response_model=None,
     responses={
-        '200': {'model': int},
-        '202': {'model': str},
-        '500': {'model': SystemErr},
+        "200": {"model": int},
+        "202": {"model": str},
+        "500": {"model": SystemErr},
     },
 )
 def fun1(request: RequestModel) -> Response:
@@ -49,6 +49,11 @@ client = TestClient(app2)
 
 class testApp(unittest.TestCase):
     def test_fun1_valid_input_200(self):
+        import pydantic
+
+        print(pydantic.__file__)
+        print(pydantic.__version__)
+
         response = client.post("/v1/test", json={"val": 1})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.text, "1")
@@ -84,7 +89,7 @@ class TestCheckResponses(unittest.TestCase):
     def test_check_responses_valid_response(self):
         # Test a valid response for status code 200
         out_response = 1
-        responses = {'200': {'model': int}}
+        responses = {"200": {"model": int}}
         response = check_response(
             application=app2, out_response=out_response, responses=responses
         )
@@ -102,7 +107,7 @@ class TestCheckResponses(unittest.TestCase):
 
     def test_check_responses_invalid_response2(self):
         out_response = "ciao"
-        responses = {'200': {'model': int}}
+        responses = {"200": {"model": int}}
         response = check_response(
             application=app2, out_response=out_response, responses=responses
         )

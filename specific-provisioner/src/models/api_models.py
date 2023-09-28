@@ -7,9 +7,9 @@ from pydantic import BaseModel, Field
 
 
 class Status(Enum):
-    RUNNING = 'RUNNING'
-    COMPLETED = 'COMPLETED'
-    FAILED = 'FAILED'
+    RUNNING = "RUNNING"
+    COMPLETED = "COMPLETED"
+    FAILED = "FAILED"
 
 
 class ValidationRequest(BaseModel):
@@ -17,23 +17,23 @@ class ValidationRequest(BaseModel):
 
 
 class DescriptorKind(StrEnum):
-    DATAPRODUCT_DESCRIPTOR = 'DATAPRODUCT_DESCRIPTOR'
-    COMPONENT_DESCRIPTOR = 'COMPONENT_DESCRIPTOR'
-    DATAPRODUCT_DESCRIPTOR_WITH_RESULTS = 'DATAPRODUCT_DESCRIPTOR_WITH_RESULTS'
+    DATAPRODUCT_DESCRIPTOR = "DATAPRODUCT_DESCRIPTOR"
+    COMPONENT_DESCRIPTOR = "COMPONENT_DESCRIPTOR"
+    DATAPRODUCT_DESCRIPTOR_WITH_RESULTS = "DATAPRODUCT_DESCRIPTOR_WITH_RESULTS"
 
 
 class ProvisioningRequest(BaseModel):
     descriptorKind: DescriptorKind
     descriptor: str = Field(
         ...,
-        description='Descriptor specification in yaml format. Its structure changes according to `descriptorKind`.',  # noqa: E501
+        description="Descriptor specification in yaml format. Its structure changes according to `descriptorKind`.",  # noqa: E501
     )
 
 
 class Status1(Enum):
-    RUNNING = 'RUNNING'
-    COMPLETED = 'COMPLETED'
-    FAILED = 'FAILED'
+    RUNNING = "RUNNING"
+    COMPLETED = "COMPLETED"
+    FAILED = "FAILED"
 
 
 class ValidationError(BaseModel):
@@ -43,11 +43,11 @@ class ValidationError(BaseModel):
 class ProvisionInfo(BaseModel):
     request: str = Field(
         ...,
-        description='Provisioning descriptor of type `COMPONENT_DESCRIPTOR` (see [DescriptorKind](#/components/schemas/DescriptorKind) schema) in JSON format. It had been used to provision the data product component',  # noqa: E501
+        description="Provisioning descriptor of type `COMPONENT_DESCRIPTOR` (see [DescriptorKind](#/components/schemas/DescriptorKind) schema) in JSON format. It had been used to provision the data product component",  # noqa: E501
     )
     result: str = Field(
         ...,
-        description='Result message (e.g. a provisiong error or a success message returned by the specific provisioner in the [ProvisioningStatus](#/components/schemas/ProvisioningStatus))',  # noqa: E501
+        description="Result message (e.g. a provisiong error or a success message returned by the specific provisioner in the [ProvisioningStatus](#/components/schemas/ProvisioningStatus))",  # noqa: E501
     )
 
 
@@ -62,20 +62,20 @@ class Info(BaseModel):
     )
     privateInfo: Dict[str, Any] = Field(
         ...,
-        description='All the values in this object will be stored in the deployed descriptor, but will not be shown in the Marketplace UI',  # noqa: E501
+        description="All the values in this object will be stored in the deployed descriptor, but will not be shown in the Marketplace UI",  # noqa: E501
     )
 
 
 class UpdateAclRequest(BaseModel):
     refs: List[str] = Field(
         ...,
-        description='Identities (i.e. users and groups) involved in the ACL update request',  # noqa: E501
+        description="Identities (i.e. users and groups) involved in the ACL update request",  # noqa: E501
         example=[
-            'user:alice',
-            'user:bob',
-            'group:groupA',
-            'group:groupB',
-            'group:groupC',
+            "user:alice",
+            "user:bob",
+            "group:groupA",
+            "group:groupB",
+            "group:groupC",
         ],
     )
     provisionInfo: ProvisionInfo

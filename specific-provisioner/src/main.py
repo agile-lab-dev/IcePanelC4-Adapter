@@ -4,7 +4,7 @@ from starlette.responses import Response
 
 from src.app_config import app
 from src.check_return_type import check_response
-from src.models import (
+from src.models.api_models import (
     ProvisioningRequest,
     ProvisioningStatus,
     SystemErr,
@@ -20,15 +20,15 @@ logger = get_logger()
 
 
 @app.post(
-    '/v1/provision',
+    "/v1/provision",
     response_model=None,
     responses={
-        '200': {'model': ProvisioningStatus},
-        '202': {'model': str},
-        '400': {'model': ValidationError},
-        '500': {'model': SystemErr},
+        "200": {"model": ProvisioningStatus},
+        "202": {"model": str},
+        "400": {"model": ValidationError},
+        "500": {"model": SystemErr},
     },
-    tags=['SpecificProvisioner'],
+    tags=["SpecificProvisioner"],
 )
 def provision(
     body: ProvisioningRequest,
@@ -44,14 +44,14 @@ def provision(
 
 
 @app.get(
-    '/v1/provision/{token}/status',
+    "/v1/provision/{token}/status",
     response_model=None,
     responses={
-        '200': {'model': ProvisioningStatus},
-        '400': {'model': ValidationError},
-        '500': {'model': SystemErr},
+        "200": {"model": ProvisioningStatus},
+        "400": {"model": ValidationError},
+        "500": {"model": SystemErr},
     },
-    tags=['SpecificProvisioner'],
+    tags=["SpecificProvisioner"],
 )
 def get_status(token: str) -> Response:
     """
@@ -65,15 +65,15 @@ def get_status(token: str) -> Response:
 
 
 @app.post(
-    '/v1/unprovision',
+    "/v1/unprovision",
     response_model=None,
     responses={
-        '200': {'model': ProvisioningStatus},
-        '202': {'model': str},
-        '400': {'model': ValidationError},
-        '500': {'model': SystemErr},
+        "200": {"model": ProvisioningStatus},
+        "202": {"model": str},
+        "400": {"model": ValidationError},
+        "500": {"model": SystemErr},
     },
-    tags=['SpecificProvisioner'],
+    tags=["SpecificProvisioner"],
 )
 def unprovision(
     body: ProvisioningRequest,
@@ -90,15 +90,15 @@ def unprovision(
 
 
 @app.post(
-    '/v1/updateacl',
+    "/v1/updateacl",
     response_model=None,
     responses={
-        '200': {'model': ProvisioningStatus},
-        '202': {'model': str},
-        '400': {'model': ValidationError},
-        '500': {'model': SystemErr},
+        "200": {"model": ProvisioningStatus},
+        "202": {"model": str},
+        "400": {"model": ValidationError},
+        "500": {"model": SystemErr},
     },
-    tags=['SpecificProvisioner'],
+    tags=["SpecificProvisioner"],
 )
 def updateacl(
     body: UpdateAclRequest,
@@ -114,10 +114,10 @@ def updateacl(
 
 
 @app.post(
-    '/v1/validate',
+    "/v1/validate",
     response_model=None,
-    responses={'200': {'model': ValidationResult}, '500': {'model': SystemErr}},
-    tags=['SpecificProvisioner'],
+    responses={"200": {"model": ValidationResult}, "500": {"model": SystemErr}},
+    tags=["SpecificProvisioner"],
 )
 def validate(body: ProvisioningRequest) -> Response:
     """
@@ -131,14 +131,14 @@ def validate(body: ProvisioningRequest) -> Response:
 
 
 @app.post(
-    '/v2/validate',
+    "/v2/validate",
     response_model=None,
     responses={
-        '202': {'model': str},
-        '400': {'model': ValidationError},
-        '500': {'model': SystemErr},
+        "202": {"model": str},
+        "400": {"model": ValidationError},
+        "500": {"model": SystemErr},
     },
-    tags=['SpecificProvisioner'],
+    tags=["SpecificProvisioner"],
 )
 def async_validate(
     body: ValidationRequest,
@@ -154,14 +154,14 @@ def async_validate(
 
 
 @app.get(
-    '/v2/validate/{token}/status',
+    "/v2/validate/{token}/status",
     response_model=None,
     responses={
-        '200': {'model': ValidationStatus},
-        '400': {'model': ValidationError},
-        '500': {'model': SystemErr},
+        "200": {"model": ValidationStatus},
+        "400": {"model": ValidationError},
+        "500": {"model": SystemErr},
     },
-    tags=['SpecificProvisioner'],
+    tags=["SpecificProvisioner"],
 )
 def get_validation_status(
     token: str,

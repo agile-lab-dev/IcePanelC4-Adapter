@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from starlette.responses import Response
 
 from src.app_config import app
-from src.models import SystemErr
+from src.models.api_models import SystemErr
 from src.utility.logger import get_logger
 
 logger = get_logger()
@@ -61,7 +61,7 @@ def check_response(
                 content=SystemErr(
                     error="An unexpected error occurred while processing the request. "
                     "If the issue still persists, contact the platform team for assistance!"  # noqa: E501
-                ).json(),
+                ).model_dump_json(),
                 media_type="application/json",
             )
 
@@ -80,7 +80,7 @@ def check_response(
             content=SystemErr(
                 error="An unexpected error occurred while processing the request. "
                 "If the issue still persists, contact the platform team for assistance!"  # noqa: E501
-            ).json(),
+            ).model_dump_json(),
             media_type="application/json",
         )
 
@@ -109,8 +109,8 @@ def _check_response_type(responses: dict, out_response: Any) -> Response:
     correct_output_type = False
     for k in responses.keys():
         endpoint_response = responses.get(k)
-        if type(endpoint_response) == dict and endpoint_response is not None:
-            if endpoint_response.get('model') == type(out_response):
+        if isinstance(endpoint_response, dict) and endpoint_response is not None:
+            if endpoint_response.get("model") == type(out_response):
                 correct_output_type = True
                 response_code = k
                 break
@@ -122,12 +122,12 @@ def _check_response_type(responses: dict, out_response: Any) -> Response:
             content=SystemErr(
                 error="An unexpected error occurred while processing the request. "
                 "If the issue still persists, contact the platform team for assistance!"  # noqa: E501
-            ).json(),
+            ).model_dump_json(),
             media_type="application/json",
         )
 
     if isinstance(out_response, BaseModel):
-        content = json.dumps(out_response.dict())
+        content = json.dumps(out_response.model_dump())
         media_type = "application/json"
     elif isinstance(out_response, list) and all(
         isinstance(item, BaseModel) for item in out_response
