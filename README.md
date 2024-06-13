@@ -20,14 +20,14 @@ This repository is part of our [Starter Kit](https://github.com/agile-lab-dev/wi
 ## Overview
 
 This project provides integration between Witboost and [Ice Panel](https://icepanel.io/) to automatically generate a C4 architectural diagram representing the entire ecosystem of Data Products and their internal implementation.
-![image](https://github.com/agile-lab/IcePanelC4-Adapter/assets/1837799/82ba1f8c-a1a9-45f4-b232-3833f5a97ec6)
 
+<img src="https://github.com/agile-lab/IcePanelC4-Adapter/assets/1837799/82ba1f8c-a1a9-45f4-b232-3833f5a97ec6" alt="image" width="500"/>
 
 ### Details
 
 In a C4 representation, the Data Product is a system. Ice Panel offers a multi-layer visualization where is also possible to explore multiple domains within the same layer, this is a perfect fit for a Data Mesh representation, because systems can be grouped in domains and then it is possible to zoom in each system ( Data Product ) to discover the inner architecture.
 
-![image](https://github.com/agile-lab/IcePanelC4-Adapter/assets/1837799/2d3563f7-739c-4a51-a414-fa339466cce0)
+<img src="https://github.com/agile-lab/IcePanelC4-Adapter/assets/1837799/2d3563f7-739c-4a51-a414-fa339466cce0" alt="image"/>
 
 
 ## Building
@@ -101,9 +101,18 @@ source $(poetry env info --path)/bin/activate # only needed if venv is not alrea
 uvicorn src.main:app --host 127.0.0.1 --port 8091
 ```
 
-By default, the server binds to port 8091 on localhost. After it's up and running you can make provisioning requests to this address. You can also check the API documentation served [here](http://127.0.0.1:8091/docs).
+By default, the server binds to port 8091 on localhost. After it's up and running, you can make provisioning requests for this address. You can also check the API documentation served [here](http://127.0.0.1:8091/docs).
 
+## Env Variables
 
+In order to set the application some environmental variable must be injected:
+- LandscapeId: to define the IcePanle landscape ID where all the domains and data products will be created
+- IcePanel API Key: you can retrieve it from the organization setting panel of IcePanel
+
+```python
+landscapeId = os.getenv('IcePanelLandscapeId')
+apiKey = os.getenv('API_KEY')
+```
 
 ## Deploying
 
