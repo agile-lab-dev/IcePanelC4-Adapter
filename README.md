@@ -4,7 +4,7 @@
     </a>
 </p>
 
-Designed by [Agile Lab](https://www.agilelab.it/), witboost is a versatile platform that addresses a wide range of sophisticated data engineering challenges. It enables businesses to discover, enhance, and productize their data, fostering the creation of automated data platforms that adhere to the highest standards of data governance. Want to know more about witboost? Check it out [here](https://www.witboost.com) or [contact us!](https://witboost.com/contact-us)
+Designed by [Agile Lab](https://www.agilelab.it/), witboost is a versatile platform that addresses various sophisticated data engineering challenges. It enables businesses to discover, enhance, and productize their data, fostering the creation of automated data platforms that adhere to the highest standards of data governance. Want to know more about witboost? Check it out [here](https://www.witboost.com) or [contact us!](https://witboost.com/contact-us)
 
 This repository is part of our [Starter Kit](https://github.com/agile-lab-dev/witboost-starter-kit) meant to showcase witboost's integration capabilities and provide a "batteries-included" product.
 
@@ -125,17 +125,16 @@ This project is available under the [Apache License, Version 2.0](https://openso
 ## About us
 
 <p align="center">
-    <a href="https://www.agilelab.it">
-        <img src="docs/img/agilelab_logo.jpg" alt="Agile Lab" width=600>
+    <a href="https://www.witboost.com">
+        <img src="docs/img/witboost_logo.svg" alt="Witboost" width=600>
     </a>
 </p>
 
-Agile Lab creates value for its Clients in data-intensive environments through customizable solutions to establish performance driven processes, sustainable architectures, and automated platforms driven by data governance best practices.
+From Chaos to Control: Data Experience on Guardrails
+Craft your own standards and automate your data practice
 
-Since 2014 we have implemented 100+ successful Elite Data Engineering initiatives and used that experience to create Witboost: a technology agnostic, modular platform, that empowers modern enterprises to discover, elevate and productize their data both in traditional environments and on fully compliant Data mesh architectures.
-
-[Contact us](https://www.agilelab.it/contacts) or follow us on:
-- [LinkedIn](https://www.linkedin.com/company/agile-lab/)
+[Contact us](https://witboost.com/contact-us) or follow us on:
+- [LinkedIn](https://www.linkedin.com/showcase/witboost/)
 - [Instagram](https://www.instagram.com/agilelab_official/)
 - [YouTube](https://www.youtube.com/channel/UCTWdhr7_4JmZIpZFhMdLzAA)
 - [Twitter](https://twitter.com/agile__lab)
