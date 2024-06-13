@@ -1,16 +1,20 @@
 from datetime import datetime
 from enum import StrEnum
-from typing import List, Literal, Optional
+from typing import Annotated, List, Literal, Optional, Type
 
 from pydantic import (
     AnyUrl,
     BaseModel,
+    BeforeValidator,
+    ConfigDict,
     Field,
     field_validator,
     model_validator,
 )
 
 from src.models.constants import OPENMETADATA_SUPPORTED_DATATYPES
+from src.models.icepanel import *
+
 
 
 class ComponentKind(StrEnum):
@@ -21,20 +25,21 @@ class ComponentKind(StrEnum):
 
 
 class TagSourceTagLabel(StrEnum):
-    CLASSIFICATION = "CLASSIFICATION"
-    GLOSSARY = "GLOSSARY"
+    CLASSIFICATION = "Classification"
+    GLOSSARY = "Glossary"
+    TAG = "Tag"
 
 
 class LabelTypeTagLabel(StrEnum):
-    MANUAL = "MANUAL"
-    PROPAGATED = "PROPAGATED"
-    AUTOMATED = "AUTOMATED"
-    DERIVED = "DERIVED"
+    MANUAL = "Manual"
+    PROPAGATED = "Propagated"
+    AUTOMATED = "Automated"
+    DERIVED = "Derived"
 
 
 class StateTagLabel(StrEnum):
-    SUGGESTED = "SUGGESTED"
-    CONFIRMED = "CONFIRMED"
+    SUGGESTED = "Suggested"
+    CONFIRMED = "Confirmed"
 
 
 class OpenMetadataTagLabel(BaseModel):
@@ -47,8 +52,8 @@ class OpenMetadataTagLabel(BaseModel):
 
 
 class ConnectionTypeWorkload(StrEnum):
-    HOUSEKEEPING = "HOUSEKEEPING"
-    DATAPIPELINE = "DATAPIPELINE"
+    HOUSEKEEPING = "HouseKeeping"
+    DATAPIPELINE = "DataPipeline"
 
 
 class OpenMetadataColumn(BaseModel):
@@ -74,7 +79,8 @@ class OpenMetadataColumn(BaseModel):
 
 class DataContract(BaseModel):
     schema_: List[OpenMetadataColumn] = Field(..., alias="schema")
-
+    termsAndConditions: Optional[str] = None
+    SLA: Optional[dict] = None  
 
 class DataSharingAgreement(BaseModel):
     purpose: Optional[str] = None
@@ -105,6 +111,8 @@ class InputWorkload(BaseModel):
 
 
 class Component(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
     id: str
     name: str
     fullyQualifiedName: Optional[str] = None
@@ -112,8 +120,33 @@ class Component(BaseModel):
     specific: dict
     kind: ComponentKind
 
+    def toIcePanel(self, IcePaneldomainId, IcePanelDPId) -> ModelObject:
+        type = "app"
+        if self.kind == "storage":
+            type = "store"
+        return ModelObject(
+            caption=self.fullyQualifiedName or "",
+            description=self.description,
+            domainId=IcePaneldomainId,
+            external=False,
+            icon=None,  # Adjust this if you have a specific icon for the data product
+            id=self.id,
+            links={},  # Adjust this if there are specific links associated with the data product
+            name=self.name,
+            parentId=IcePanelDPId, 
+            parentIds=[],  # Adjust this if the data product has parents in the C4 model
+            status="live",  # Default to "live" if no status is provided
+            tagIds=[],  # Add tag IDs if necessary
+            teamIds=[],  # Add team IDs if necessary
+            technologies={},  # Add technologies if necessary
+            type=  type 
+        )
+
 
 class OutputPort(Component):
+    model_config = ConfigDict(extra="allow")
+    kind: Literal[ComponentKind.OUTPUTPORT]
+
     version: str
     infrastructureTemplateId: str
     useCaseTemplateId: Optional[str] = None
@@ -123,26 +156,46 @@ class OutputPort(Component):
     outputPortType: str
     creationDate: Optional[datetime] = None
     startDate: Optional[datetime] = None
-    retentionTime: Optional[str] = None
-    processDescription: Optional[str] = None
     dataContract: DataContract
     dataSharingAgreement: DataSharingAgreement
-    tags: List[OpenMetadataTagLabel]
-    sampleData: Optional[dict] = None  # OpenMetadataTable
+    tags: Optional[List[OpenMetadataTagLabel]] = None
+    sampleData: Optional[dict] = None
     semanticLinking: List[dict]
 
+    def toIcePanel(self, IcePaneldomainId, IcePanelDPId) -> ModelObject:
+
+        return ModelObject(
+            caption=self.fullyQualifiedName or "",
+            description=self.description,
+            domainId=IcePaneldomainId,
+            external=False,
+            icon=None,  # Adjust this if you have a specific icon for the data product
+            id=self.id,
+            links={},  # Adjust this if there are specific links associated with the data product
+            name=self.name,
+            parentId=IcePanelDPId, 
+            parentIds=[],  # Adjust this if the data product has parents in the C4 model
+            status="live",  # Default to "live" if no status is provided
+            tagIds=[],  # Add tag IDs if necessary
+            teamIds=[],  # Add team IDs if necessary
+            technologies={},  # Add technologies if necessary
+            type="app"  # Type for the C4 model in IcePanel
+        )
+    
     @field_validator("kind")
     @classmethod
     def check_kind(cls, value, values):
-        if value == "outputport":
+        if value == ComponentKind.OUTPUTPORT:
             return value
         else:
             raise ValueError(
                 f"kind of component with id {values.get('id')} must be 'outputport'"  # noqa: E501
             )
 
-
 class Workload(Component):
+    model_config = ConfigDict(extra="allow")
+    kind: Literal[ComponentKind.WORKLOAD]
+
     version: str
     infrastructureTemplateId: str
     useCaseTemplateId: Optional[str] = None
@@ -153,6 +206,27 @@ class Workload(Component):
     connectionType: ConnectionTypeWorkload
     tags: List[OpenMetadataTagLabel]
     readsFrom: Optional[List[InputWorkload]] = None
+
+    def toIcePanel(self, IcePaneldomainId, IcePanelDPId) -> ModelObject:
+
+        return ModelObject(
+            caption=self.fullyQualifiedName or "",
+            description=self.description,
+            domainId=IcePaneldomainId,
+            external=False,
+            icon=None,  # Adjust this if you have a specific icon for the data product
+            id=self.id,
+            links={},  # Adjust this if there are specific links associated with the data product
+            name=self.name,
+            parentId=IcePanelDPId, 
+            parentIds=[],  # Adjust this if the data product has parents in the C4 model
+            status="live",  # Default to "live" if no status is provided
+            tagIds=[],  # Add tag IDs if necessary
+            teamIds=[],  # Add team IDs if necessary
+            technologies={},  # Add technologies if necessary
+            type="app"  # Type for the C4 model in IcePanel
+        )
+
 
     def __init__(self, **data):
         reads_from_values = data.get("readsFrom", [])
@@ -191,7 +265,7 @@ class Workload(Component):
     @field_validator("kind")
     @classmethod
     def check_kind(cls, value, values):
-        if value == "workload":
+        if value == ComponentKind.WORKLOAD:
             return value
         else:
             raise ValueError(
@@ -199,8 +273,12 @@ class Workload(Component):
             )
 
 
+
 class StorageArea(Component):
-    owners: List[str]
+    model_config = ConfigDict(extra="allow")
+    kind: Literal[ComponentKind.STORAGE]
+
+    # owners: List[str]
     infrastructureTemplateId: str
     useCaseTemplateId: Optional[str] = None
     dependsOn: List[str]
@@ -209,20 +287,42 @@ class StorageArea(Component):
     storageType: Optional[str] = None
     tags: List[OpenMetadataTagLabel]
 
+    def toIcePanel(self, IcePaneldomainId, IcePanelDPId) -> ModelObject:
+
+        return ModelObject(
+            caption=self.fullyQualifiedName or "",
+            description=self.description,
+            domainId=IcePaneldomainId,
+            external=False,
+            icon=None,  # Adjust this if you have a specific icon for the data product
+            id=self.id,
+            links={},  # Adjust this if there are specific links associated with the data product
+            name=self.name,
+            parentId=IcePanelDPId, 
+            parentIds=[],  # Adjust this if the data product has parents in the C4 model
+            status="live",  # Default to "live" if no status is provided
+            tagIds=[],  # Add tag IDs if necessary
+            teamIds=[],  # Add team IDs if necessary
+            technologies={},  # Add technologies if necessary
+            type="store"  # Type for the C4 model in IcePanel
+        )
+
     @field_validator("kind")
     @classmethod
     def check_kind(cls, value, values):
-        if value == "storage":
+        if value == ComponentKind.STORAGE:
             return value
         else:
             raise ValueError(
                 f"kind of component with id {values.get('id')} must be 'storage'"  # noqa: E501
             )
 
-
 class Observability(Component):
-    kind: ComponentKind
-    endpoint: AnyUrl
+
+    model_config = ConfigDict(extra="allow")
+    kind: Literal[ComponentKind.OBSERVABILITY]
+
+    endpoint: str
     completeness: dict
     dataProfiling: dict
     freshness: dict
@@ -232,12 +332,30 @@ class Observability(Component):
     @field_validator("kind")
     @classmethod
     def check_kind(cls, value, values):
-        if value == "observability":
+        if value == ComponentKind.OBSERVABILITY:
             return value
         else:
             raise ValueError(
                 f"kind of component with id {values.get('id')} must be 'observability'"  # noqa: E501
             )
+        
+component_map: dict[str, Type[Component]] = {
+    ComponentKind.OBSERVABILITY: Observability,
+    ComponentKind.OUTPUTPORT: OutputPort,
+    ComponentKind.WORKLOAD: Workload,
+    ComponentKind.STORAGE: StorageArea,
+}
+
+
+def parse_component(data: dict) -> Component:
+    kind = data.get("kind")
+    if kind not in component_map:
+        raise ValueError(f"Unknown component kind: {kind}")
+    component = component_map[kind](**data)
+    return component
+
+
+
 
 
 class DataProduct(BaseModel):
@@ -247,6 +365,7 @@ class DataProduct(BaseModel):
     description: str
     kind: Literal["dataproduct"]
     domain: str
+    domainId: str
     version: str
     environment: str
     dataProductOwner: str
@@ -260,7 +379,27 @@ class DataProduct(BaseModel):
     billing: Optional[dict] = None
     tags: List[OpenMetadataTagLabel]
     specific: dict
-    components: List[Component]
+    components: List[Annotated[Component, BeforeValidator(parse_component)]]
+
+    def toIcePanel(self, IcePaneldomainId, rootId) -> ModelObject:
+
+        return ModelObject(
+            caption=self.fullyQualifiedName or "",
+            description=self.description,
+            domainId=IcePaneldomainId,
+            external=False,
+            icon=None,  # Adjust this if you have a specific icon for the data product
+            id=self.id,
+            links={},  # Adjust this if there are specific links associated with the data product
+            name=self.name,
+            parentId=rootId,  # Adjust this if the data product has a parent in the C4 model
+            parentIds=[],  # Adjust this if the data product has parents in the C4 model
+            status="live",  # Default to "live" if no status is provided
+            tagIds=[],  # Add tag IDs if necessary
+            teamIds=[],  # Add team IDs if necessary
+            technologies={},  # Add technologies if necessary
+            type="system"  # Type for the C4 model in IcePanel
+        )
 
     def get_components_by_kind(self, kind: str) -> List[Component]:
         """
